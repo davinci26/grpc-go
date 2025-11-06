@@ -98,6 +98,7 @@ func (bb) Build(cc balancer.ClientConn, bOpts balancer.BuildOptions) balancer.Ba
 }
 
 func (bb) ParseConfig(s json.RawMessage) (serviceconfig.LoadBalancingConfig, error) {
+	fmt.Println("I AM HERE", string(s))
 	lbCfg := &LBConfig{
 		// Default top layer values as documented in A50.
 		Interval:           iserviceconfig.Duration(10 * time.Second),
@@ -261,7 +262,8 @@ func (b *outlierDetectionBalancer) onIntervalConfig() {
 			interval = 0
 		}
 	}
-	b.intervalTimer = afterFunc(interval, b.intervalTimerAlgorithm)
+	fmt.Println("I AM HERE 5", interval)
+	b.intervalTimer = afterFunc(5*time.Second, b.intervalTimerAlgorithm)
 }
 
 // onNoopConfig handles logic required specifically on the receipt of a
@@ -349,9 +351,12 @@ func (b *outlierDetectionBalancer) UpdateClientConnState(s balancer.ClientConnSt
 		b.intervalTimer.Stop()
 	}
 
+	fmt.Println("I AM HERE 2")
 	if b.noopConfig() {
+		fmt.Println("I AM HERE 3")
 		b.onNoopConfig()
 	} else {
+		fmt.Println("I AM HERE 4")
 		b.onIntervalConfig()
 	}
 	b.mu.Unlock()
@@ -718,6 +723,7 @@ func (b *outlierDetectionBalancer) run() {
 // Detection configuration and data about each endpoint from the previous
 // interval.
 func (b *outlierDetectionBalancer) intervalTimerAlgorithm() {
+	fmt.Println("I AM HERE 6")
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	b.timerStartTime = time.Now()
@@ -727,6 +733,7 @@ func (b *outlierDetectionBalancer) intervalTimerAlgorithm() {
 	}
 
 	if b.cfg.SuccessRateEjection != nil {
+		fmt.Println("I AM HERE 6", b.cfg.SuccessRateEjection)
 		b.successRateAlgorithm()
 	}
 
