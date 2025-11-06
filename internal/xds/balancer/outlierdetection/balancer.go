@@ -813,10 +813,13 @@ func (b *outlierDetectionBalancer) meanAndStdDev(endpoints []*endpointInfo) (flo
 //
 // Caller must hold b.mu.
 func (b *outlierDetectionBalancer) successRateAlgorithm() {
+	fmt.Println("I AM HERE 7")
+	ejectionsUnenforcedMetric.Record(b.metricsRecorder, 1, "dummy", "success_rate", "max_ejection_overflow")
 	endpointsToConsider := b.endpointsWithAtLeastRequestVolume(b.cfg.SuccessRateEjection.RequestVolume)
 	if len(endpointsToConsider) < int(b.cfg.SuccessRateEjection.MinimumHosts) {
 		return
 	}
+	fmt.Println("I AM HERE 8", endpointsToConsider)
 	mean, stddev := b.meanAndStdDev(endpointsToConsider)
 	ejectionCfg := b.cfg.SuccessRateEjection
 	for _, epInfo := range endpointsToConsider {
